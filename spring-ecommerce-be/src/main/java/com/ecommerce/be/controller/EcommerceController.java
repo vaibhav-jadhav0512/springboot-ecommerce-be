@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.be.auth.models.User;
 import com.ecommerce.be.model.Category;
+import com.ecommerce.be.model.SubCategory;
 import com.ecommerce.be.service.EcommerceService;
 import com.github.slugify.Slugify;
 
@@ -43,6 +44,8 @@ public class EcommerceController {
 	public ResponseEntity<User> getAdminById(@AuthenticationPrincipal User user) {
 		return new ResponseEntity<>(service.getAdminById(user.getUid()), HttpStatus.OK);
 	}
+
+	/* CATEGORIES */
 
 	@GetMapping("/get/category/all")
 	public ResponseEntity<List<Category>> getAllCategories() {
@@ -73,4 +76,37 @@ public class EcommerceController {
 	public ResponseEntity<Integer> deleteCategory(@PathVariable("slug") String slug) {
 		return new ResponseEntity<>(service.deleteCategory(slug), HttpStatus.OK);
 	}
+
+	/* SUB-CATEGORIES */
+
+	@GetMapping("/get/sub-category/all")
+	public ResponseEntity<List<SubCategory>> getAllSubCategories() {
+		return new ResponseEntity<>(service.getAllSubCategories(), HttpStatus.OK);
+	}
+
+	@GetMapping("/get/sub-category/{slug}")
+	public ResponseEntity<SubCategory> getSubCategoryById(@PathVariable("slug") String slug) {
+		return new ResponseEntity<>(service.getSubCategoryById(slug), HttpStatus.OK);
+	}
+
+	@PostMapping("/sub-category/save")
+	public ResponseEntity<SubCategory> saveSubCategory(@RequestBody @Valid SubCategory category) {
+		final Slugify slg = Slugify.builder().build();
+		category.setSlug(slg.slugify(category.getName()));
+		service.saveSubCategory(category);
+		return new ResponseEntity<>(category, HttpStatus.CREATED);
+	}
+
+	@PutMapping("/sub-category/update")
+	public ResponseEntity<Integer> updateSubCategory(@RequestBody SubCategory category) {
+		final Slugify slg = Slugify.builder().build();
+		category.setSlugUpdate(slg.slugify(category.getName()));
+		return new ResponseEntity<>(service.updateSubCategory(category), HttpStatus.OK);
+	}
+
+	@DeleteMapping("/sub-category/delete/{slug}")
+	public ResponseEntity<Integer> deleteSubCategory(@PathVariable("slug") String slug) {
+		return new ResponseEntity<>(service.deleteSubCategory(slug), HttpStatus.OK);
+	}
+
 }

@@ -13,5 +13,10 @@ public class EcommerceQueries {
 	public static final String SAVE_CATEGORY = "INSERT INTO ecom.category (slug,name) VALUES(:slug,:name)";
 	public static final String UPDATE_CATEGORY = "UPDATE ecom.category SET name=:name,slug=:slugUpdate WHERE slug=:slug";
 	public static final String DELETE_CATEGORY = "DELETE FROM ecom.category WHERE slug=:slug";
+	public static final String GET_ALL_SUB_CATEGORIES = "SELECT slug, name,parent FROM ecom.sub_category";
+	public static final String GET_SUB_CATEGORY_BY_ID = "SELECT slug, name,parent FROM ecom.sub_category WHERE slug=:slug";
+	public static final String SAVE_SUB_CATEGORY = "INSERT INTO ecom.sub_category (slug,name,parent) VALUES(:slug,:name,:parent)";
+	public static final String UPDATE_SUB_CATEGORY = "UPDATE ecom.sub_category SET name=:name,slug=:slugUpdate, parent=:parent WHERE slug=:slug";
+	public static final String DELETE_SUB_CATEGORY = "DELETE FROM ecom.sub_category WHERE slug=:slug";
 
 }

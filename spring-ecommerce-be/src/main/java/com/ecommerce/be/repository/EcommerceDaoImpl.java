@@ -11,8 +11,10 @@ import org.springframework.stereotype.Repository;
 import com.ecommerce.be.auth.models.User;
 import com.ecommerce.be.exception.CategoryAlreadyExistsException;
 import com.ecommerce.be.model.Category;
+import com.ecommerce.be.model.SubCategory;
 import com.ecommerce.be.queries.EcommerceQueries;
 import com.ecommerce.be.repository.rowmapper.CategoryRowMapper;
+import com.ecommerce.be.repository.rowmapper.SubCategoryRowMapper;
 import com.ecommerce.be.repository.rowmapper.UserRowMapper;
 
 @Repository
@@ -84,6 +86,48 @@ public class EcommerceDaoImpl implements EcommerceDao {
 		Map<String, Object> params = new HashMap<>();
 		params.put("slug", slug);
 		return template.update(EcommerceQueries.DELETE_CATEGORY, params);
+	}
+
+	@Override
+	public List<SubCategory> getAllSubCategories() {
+		return template.query(EcommerceQueries.GET_ALL_SUB_CATEGORIES, new SubCategoryRowMapper());
+	}
+
+	@Override
+	public SubCategory getSubCategoryById(String slug) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("slug", slug);
+		return template.queryForObject(EcommerceQueries.GET_SUB_CATEGORY_BY_ID, params, new SubCategoryRowMapper());
+	}
+
+	@Override
+	public int saveSubCategory(SubCategory category) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("slug", category.getSlug());
+		params.put("name", category.getName());
+		params.put("parent", category.getParent());
+		try {
+			return template.update(EcommerceQueries.SAVE_SUB_CATEGORY, params);
+		} catch (Exception e) {
+			throw new CategoryAlreadyExistsException("Sub Category already exists!");
+		}
+	}
+
+	@Override
+	public int updateSubCategory(SubCategory category) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("slug", category.getSlug());
+		params.put("slugUpdate", category.getSlugUpdate());
+		params.put("name", category.getName());
+		params.put("parent", category.getParent());
+		return template.update(EcommerceQueries.UPDATE_SUB_CATEGORY, params);
+	}
+
+	@Override
+	public int deleteSubCategory(String slug) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("slug", slug);
+		return template.update(EcommerceQueries.DELETE_SUB_CATEGORY, params);
 	}
 
 }
