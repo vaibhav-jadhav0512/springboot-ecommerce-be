@@ -1,8 +1,8 @@
 package com.ecommerce.be.auth.models;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 @Data
 public class User implements Serializable {
@@ -17,5 +17,5 @@ public class User implements Serializable {
 	private boolean isEmailVerified;
 	private String issuer;
 	private String picture;
-
+	private String role;
 }

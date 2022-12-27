@@ -1,3 +1,11 @@
+server:
+  port: 9000
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core: DEBUG
 spring:
   servlet:
     multipart:
@@ -7,21 +15,9 @@ spring:
   application:
     name: visualizer
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
+    url: jdbc:mysql://localhost:3306/ecom
+    username: root
     password: password
-    # alternative datasource: external mysql database example
-#    url: jdbc:mysql://localhost:3306/test
-#    username: root
-#    password: root
-
-  jpa:
-    # remove the next line, if you use mysql:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-
-
 security:
   firebase-props:
     database-url: ${FIREBASE_DATABASE}
@@ -64,10 +60,9 @@ security:
   allowed-public-apis:
     - /favicon.ico
     - /session/login
-    - /public/**
+    - /ecommerce/get/category/**
   exposed-headers:
     - X-Xsrf-Token
-
 
 
 
