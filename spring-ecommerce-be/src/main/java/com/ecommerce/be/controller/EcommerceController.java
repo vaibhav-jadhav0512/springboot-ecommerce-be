@@ -1,5 +1,6 @@
 package com.ecommerce.be.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ecommerce.be.auth.models.User;
 import com.ecommerce.be.model.Category;
+import com.ecommerce.be.model.Product;
 import com.ecommerce.be.model.SubCategory;
 import com.ecommerce.be.service.EcommerceService;
 import com.github.slugify.Slugify;
@@ -45,7 +47,9 @@ public class EcommerceController {
 		return new ResponseEntity<>(service.getAdminById(user.getUid()), HttpStatus.OK);
 	}
 
-	/* CATEGORIES */
+	/*
+	 * CATEGORIES
+	 */
 
 	@GetMapping("/get/category/all")
 	public ResponseEntity<List<Category>> getAllCategories() {
@@ -77,7 +81,9 @@ public class EcommerceController {
 		return new ResponseEntity<>(service.deleteCategory(slug), HttpStatus.OK);
 	}
 
-	/* SUB-CATEGORIES */
+	/*
+	 * SUB-CATEGORIES
+	 */
 
 	@GetMapping("/get/sub-category/all")
 	public ResponseEntity<List<SubCategory>> getAllSubCategories() {
@@ -87,6 +93,11 @@ public class EcommerceController {
 	@GetMapping("/get/sub-category/{slug}")
 	public ResponseEntity<SubCategory> getSubCategoryById(@PathVariable("slug") String slug) {
 		return new ResponseEntity<>(service.getSubCategoryById(slug), HttpStatus.OK);
+	}
+
+	@GetMapping("/get/sub-category/parent/{parent}")
+	public ResponseEntity<List<SubCategory>> getSubCategoryByParent(@PathVariable("parent") String parent) {
+		return new ResponseEntity<>(service.getSubCategoryByParent(parent), HttpStatus.OK);
 	}
 
 	@PostMapping("/sub-category/save")
@@ -107,6 +118,34 @@ public class EcommerceController {
 	@DeleteMapping("/sub-category/delete/{slug}")
 	public ResponseEntity<Integer> deleteSubCategory(@PathVariable("slug") String slug) {
 		return new ResponseEntity<>(service.deleteSubCategory(slug), HttpStatus.OK);
+	}
+
+	/*
+	 * PRODUCT
+	 */
+	@PostMapping("/product/save")
+	public ResponseEntity<Product> saveProduct(@RequestBody @Valid Product product) {
+		final Slugify slg = Slugify.builder().build();
+		product.setSlug(slg.slugify(product.getTitle()));
+		List<SubCategory> subs = new ArrayList<>();
+		for (int j = 0; j < product.getSubCategoriesStr().size(); j++) {
+			SubCategory sub = new SubCategory();
+			sub.setSlug(product.getSubCategoriesStr().get(j));
+			subs.add(sub);
+		}
+		product.setSubCategories(subs);
+		try {
+			service.saveProduct(product);
+			return new ResponseEntity<>(product, HttpStatus.CREATED);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(product, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@GetMapping("/get/product/all")
+	public ResponseEntity<List<Product>> getAllProducts() {
+		return new ResponseEntity<>(service.getAllProducts(), HttpStatus.OK);
 	}
 
 }

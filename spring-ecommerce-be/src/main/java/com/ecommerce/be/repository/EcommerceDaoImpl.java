@@ -11,13 +11,19 @@ import org.springframework.stereotype.Repository;
 import com.ecommerce.be.auth.models.User;
 import com.ecommerce.be.exception.CategoryAlreadyExistsException;
 import com.ecommerce.be.model.Category;
+import com.ecommerce.be.model.Product;
 import com.ecommerce.be.model.SubCategory;
 import com.ecommerce.be.queries.EcommerceQueries;
 import com.ecommerce.be.repository.rowmapper.CategoryRowMapper;
+import com.ecommerce.be.repository.rowmapper.ProductRowMapper;
+import com.ecommerce.be.repository.rowmapper.ProductSubCategoryRowMapper;
 import com.ecommerce.be.repository.rowmapper.SubCategoryRowMapper;
 import com.ecommerce.be.repository.rowmapper.UserRowMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Repository
+@Slf4j
 public class EcommerceDaoImpl implements EcommerceDao {
 
 	@Autowired
@@ -128,6 +134,49 @@ public class EcommerceDaoImpl implements EcommerceDao {
 		Map<String, Object> params = new HashMap<>();
 		params.put("slug", slug);
 		return template.update(EcommerceQueries.DELETE_SUB_CATEGORY, params);
+	}
+
+	@Override
+	public int saveProduct(Product product) {
+		log.info("Product:{}", product.toString());
+		Map<String, Object> params = new HashMap<>();
+		params.put("slug", product.getSlug());
+		params.put("title", product.getTitle());
+		params.put("description", product.getDescription());
+		params.put("price", product.getPrice());
+		params.put("category", product.getCategory());
+		params.put("quantity", product.getQuantity());
+		params.put("sold", product.getSold());
+		params.put("shipping", product.getShipping().toString());
+		params.put("colour", product.getColour().toString());
+		params.put("brand", product.getBrand().toString());
+		int res = template.update(EcommerceQueries.SAVE_PRODUCT, params);
+		for (SubCategory sub : product.getSubCategories()) {
+			params.put("sub_slug", sub.getSlug());
+			template.update(EcommerceQueries.SAVE_PRODUCT_SUB_CATEGORIES, params);
+			params.remove("sub_slug");
+		}
+		return res;
+	}
+
+	@Override
+	public List<Product> getAllProducts() {
+		List<Product> prods = template.query(EcommerceQueries.GET_ALL_PRODUCTS, new ProductRowMapper());
+		Map<String, Object> params = new HashMap<>();
+		for (Product prod : prods) {
+			params.put("productSlug", prod.getSlug());
+			prod.setSubCategories(template.query(EcommerceQueries.GET_ALL_PRODUCTS_SUB_CATEGORIES, params,
+					new ProductSubCategoryRowMapper()));
+			params.remove("productSlug");
+		}
+		return prods;
+	}
+
+	@Override
+	public List<SubCategory> getSubCategoryByParent(String parent) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("parent", parent);
+		return template.query(EcommerceQueries.GET_ALL_SUB_CATEGORIES_BY_PARENT, params, new SubCategoryRowMapper());
 	}
 
 }

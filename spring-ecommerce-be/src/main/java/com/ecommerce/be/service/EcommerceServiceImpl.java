@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ecommerce.be.auth.models.User;
 import com.ecommerce.be.exception.AdminNotFoundException;
 import com.ecommerce.be.model.Category;
+import com.ecommerce.be.model.Product;
 import com.ecommerce.be.model.SubCategory;
 import com.ecommerce.be.repository.EcommerceDao;
 
@@ -86,12 +87,30 @@ public class EcommerceServiceImpl implements EcommerceService {
 
 	@Override
 	public int updateSubCategory(SubCategory category) {
+		log.info("Updating sub category: {}", category.toString());
 		return dao.updateSubCategory(category);
 	}
 
 	@Override
 	public int deleteSubCategory(String slug) {
 		return dao.deleteSubCategory(slug);
+	}
+
+	@Override
+	public int saveProduct(Product product) {
+		log.info("Creating product:{}", product.toString());
+		return dao.saveProduct(product);
+	}
+
+	@Override
+	public List<Product> getAllProducts() {
+		List<Product> allProducts = dao.getAllProducts();
+		return allProducts;
+	}
+
+	@Override
+	public List<SubCategory> getSubCategoryByParent(String parent) {
+		return dao.getSubCategoryByParent(parent);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ecommerce.be.auth.models.User;
 import com.ecommerce.be.model.Category;
+import com.ecommerce.be.model.Product;
 import com.ecommerce.be.model.SubCategory;
 
 public interface EcommerceDao {
@@ -33,5 +34,11 @@ public interface EcommerceDao {
 	int updateSubCategory(SubCategory category);
 
 	int deleteSubCategory(String slug);
+
+	int saveProduct(Product product);
+
+	List<Product> getAllProducts();
+
+	List<SubCategory> getSubCategoryByParent(String parent);
 
 }
