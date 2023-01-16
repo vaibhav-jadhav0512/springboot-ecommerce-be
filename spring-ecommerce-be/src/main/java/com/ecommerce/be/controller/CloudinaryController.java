@@ -2,6 +2,7 @@ package com.ecommerce.be.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,18 +27,34 @@ public class CloudinaryController {
 	Dotenv dotenv = Dotenv.load();
 	Cloudinary cloudinary = new Cloudinary(dotenv.get("CLOUDINARY_URL"));
 
-	@PostMapping("/upload")
-	public ResponseEntity<?> upload(@RequestPart("file") MultipartFile file) {
-		File files = new File(file.getOriginalFilename());
+	@PostMapping("/image/upload")
+	public ResponseEntity<?> upload(@RequestPart("file") MultipartFile[] file) {
+		Map<Object, Object> map = new HashMap<>();
 		Map uploadRes = new HashMap<>();
+		for (MultipartFile element : file) {
+			File files = new File(element.getOriginalFilename());
 		try (FileOutputStream fos = new FileOutputStream(files)) {
-			fos.write(file.getBytes());
-			uploadRes = cloudinary.uploader().upload(files,
+			fos.write(element.getBytes());
+			uploadRes = cloudinary.uploader().uploadLarge(files,
 					ObjectUtils.asMap("use_filename", true, "unique_filename", false, "overwrite", true));
+			map.put(uploadRes.get("public_id"), uploadRes.get("url"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new ResponseEntity<>(uploadRes.get("url"), HttpStatus.OK);
+	}
+	return new ResponseEntity<>(map, HttpStatus.OK);
+	}
+
+	@PostMapping("/image/delete")
+	public ResponseEntity<?> deleteImage(@RequestParam("imgId") String imgId) {
+		Map deleteRes = new HashMap<>();
+		try {
+			deleteRes = cloudinary.uploader().destroy(imgId, ObjectUtils.emptyMap());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(deleteRes.get("result"),
+				deleteRes.get("result").equals("ok") ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	}
 
 }
