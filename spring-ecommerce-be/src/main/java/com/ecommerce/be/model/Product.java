@@ -2,6 +2,7 @@ package com.ecommerce.be.model;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -25,6 +26,7 @@ public class Product {
 	private String category;
 	private List<SubCategory> subCategories;
 	private List<String> subCategoriesStr;
+	private List<Map<String, String>> images;
 	private int quantity;
 	private int sold;
 	private Shipping shipping;

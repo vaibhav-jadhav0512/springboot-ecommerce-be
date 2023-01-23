@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -156,12 +159,24 @@ public class EcommerceDaoImpl implements EcommerceDao {
 			template.update(EcommerceQueries.SAVE_PRODUCT_SUB_CATEGORIES, params);
 			params.remove("sub_slug");
 		}
+		for (Map<String, String> element : product.getImages()) {
+			for (String key : element.keySet()) {
+				params.put("img_id", key);
+				params.put("img_url", element.get(key));
+				template.update(EcommerceQueries.SAVE_PRODUCT_IMAGE, params);
+				params.remove("img_id");
+				params.remove("img_url");
+			}
+		}
 		return res;
 	}
 
 	@Override
-	public List<Product> getAllProducts() {
-		List<Product> prods = template.query(EcommerceQueries.GET_ALL_PRODUCTS, new ProductRowMapper());
+	public Page<Product> getAllProducts(Pageable page) {
+		List<Product> prods = template.query(
+				"SELECT title, slug, description, price, category, quantity, sold, shipping, colour, brand, created_dt, updated_dt FROM ecom.product LIMIT "
+						+ page.getPageSize() + " OFFSET " + page.getOffset(),
+				new ProductRowMapper());
 		Map<String, Object> params = new HashMap<>();
 		for (Product prod : prods) {
 			params.put("productSlug", prod.getSlug());
@@ -169,7 +184,13 @@ public class EcommerceDaoImpl implements EcommerceDao {
 					new ProductSubCategoryRowMapper()));
 			params.remove("productSlug");
 		}
-		return prods;
+//		return prods;
+		return new PageImpl<>(prods, page, count());
+	}
+
+	public int count() {
+		Map<String, Object> params = new HashMap<>();
+		return template.queryForObject(EcommerceQueries.GET_PRODUCT_COUNT, params, Integer.class);
 	}
 
 	@Override

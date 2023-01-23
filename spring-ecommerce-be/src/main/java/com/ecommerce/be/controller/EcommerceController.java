@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -143,9 +144,11 @@ public class EcommerceController {
 		return new ResponseEntity<>(product, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@GetMapping("/get/product/all")
-	public ResponseEntity<List<Product>> getAllProducts() {
-		return new ResponseEntity<>(service.getAllProducts(), HttpStatus.OK);
+	@GetMapping("/get/product/{page}/{size}")
+	public ResponseEntity<List<Product>> getAllProducts(@PathVariable("page") final int page,
+			@PathVariable("size") final int size) {
+		PageRequest pageable = PageRequest.of(page, size);
+		return new ResponseEntity<>(service.getAllProducts(pageable).getContent(), HttpStatus.OK);
 	}
 
 }

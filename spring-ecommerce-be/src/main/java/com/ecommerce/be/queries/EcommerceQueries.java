@@ -29,4 +29,8 @@ public class EcommerceQueries {
 			+ "(product_slug, sub_category_slug)  VALUES(:slug,:sub_slug)";
 	public static final String GET_ALL_PRODUCTS_SUB_CATEGORIES = "SELECT sub_category_slug "
 			+ "FROM ecom.product_sub_category_rel WHERE product_slug=:productSlug";
+	public static final String SAVE_PRODUCT_IMAGE = "INSERT INTO ecom.product_images "
+			+ "(slug, img_id, img_url, created_dt, updated_dt) "
+			+ "VALUES(:slug,:img_id, :img_url, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+	public static final String GET_PRODUCT_COUNT = "SELECT count(*) FROM  ecom.product";
 }

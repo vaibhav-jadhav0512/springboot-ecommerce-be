@@ -2,6 +2,9 @@ package com.ecommerce.be.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.ecommerce.be.auth.models.User;
 import com.ecommerce.be.model.Category;
 import com.ecommerce.be.model.Product;
@@ -37,7 +40,7 @@ public interface EcommerceDao {
 
 	int saveProduct(Product product);
 
-	List<Product> getAllProducts();
+	Page<Product> getAllProducts(Pageable page);
 
 	List<SubCategory> getSubCategoryByParent(String parent);
 

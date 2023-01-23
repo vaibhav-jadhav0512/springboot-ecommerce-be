@@ -31,10 +31,10 @@ public class CloudinaryController {
 	public ResponseEntity<?> upload(@RequestPart("file") MultipartFile[] file) {
 		Map<Object, Object> map = new HashMap<>();
 		Map uploadRes = new HashMap<>();
-		for (MultipartFile element : file) {
-			File files = new File(element.getOriginalFilename());
+		for (int i = 0; i < file.length; i++) {
+			File files = new File(file[i].getOriginalFilename());
 		try (FileOutputStream fos = new FileOutputStream(files)) {
-			fos.write(element.getBytes());
+				fos.write(file[i].getBytes());
 			uploadRes = cloudinary.uploader().uploadLarge(files,
 					ObjectUtils.asMap("use_filename", true, "unique_filename", false, "overwrite", true));
 			map.put(uploadRes.get("public_id"), uploadRes.get("url"));

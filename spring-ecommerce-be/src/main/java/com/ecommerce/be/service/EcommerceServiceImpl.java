@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.be.auth.models.User;
@@ -103,9 +105,8 @@ public class EcommerceServiceImpl implements EcommerceService {
 	}
 
 	@Override
-	public List<Product> getAllProducts() {
-		List<Product> allProducts = dao.getAllProducts();
-		return allProducts;
+	public Page<Product> getAllProducts(Pageable page) {
+		return dao.getAllProducts(page);
 	}
 
 	@Override
