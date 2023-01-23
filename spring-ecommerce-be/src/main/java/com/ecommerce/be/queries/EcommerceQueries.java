@@ -33,4 +33,5 @@ public class EcommerceQueries {
 			+ "(slug, img_id, img_url, created_dt, updated_dt) "
 			+ "VALUES(:slug,:img_id, :img_url, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 	public static final String GET_PRODUCT_COUNT = "SELECT count(*) FROM  ecom.product";
+	public static final String GET_ALL_PRODUCTS_LIST_SIZE = "SELECT title, slug, description, price, category, quantity, sold, shipping, colour, brand, created_dt, updated_dt FROM ecom.product LIMIT ";
 }

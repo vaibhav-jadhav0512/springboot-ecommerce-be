@@ -174,7 +174,7 @@ public class EcommerceDaoImpl implements EcommerceDao {
 	@Override
 	public Page<Product> getAllProducts(Pageable page) {
 		List<Product> prods = template.query(
-				"SELECT title, slug, description, price, category, quantity, sold, shipping, colour, brand, created_dt, updated_dt FROM ecom.product LIMIT "
+				EcommerceQueries.GET_ALL_PRODUCTS_LIST_SIZE
 						+ page.getPageSize() + " OFFSET " + page.getOffset(),
 				new ProductRowMapper());
 		Map<String, Object> params = new HashMap<>();
